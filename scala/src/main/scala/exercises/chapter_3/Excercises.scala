@@ -72,3 +72,9 @@ object List {
   }
 
 }
+
+object Concrete_Usecase {
+  def sum(list: List[Int]) = List.foldLeft(list, 0)(_ + _)
+
+  def product(list: List[Int]) = List.foldLeft(list, 1)(_ * _)
+}
