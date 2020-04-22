@@ -59,5 +59,13 @@ object List {
     foldRight(list, 0)((_, acc) => acc + 1)
   }
 
+  @tailrec
+  def foldLeft[A, B](list: List[A], initial: B)(f: (B, A) => B): B = {
+    list match {
+      case Nil               => initial
+      case Cons(value, next) => foldLeft(next, f(initial, value))(f)
+    }
+  }
+
   }
 }
