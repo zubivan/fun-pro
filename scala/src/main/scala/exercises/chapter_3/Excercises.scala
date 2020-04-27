@@ -4,7 +4,7 @@ import scala.annotation.tailrec
 
 sealed trait List[+A]
 case object Nil extends List[Nothing]
-case class Cons[A](value: A, next: List[A]) extends List[A]
+case class Cons[A](value: A, tail: List[A]) extends List[A]
 
 object List {
 
@@ -44,14 +44,14 @@ object List {
     list match {
       case Nil               => Nil
       case Cons(value, Nil)  => Nil
-      case Cons(value, next) => Cons(value, init(next))
+      case Cons(value, tail) => Cons(value, init(tail))
     }
   }
 
   def foldRight[A, B](list: List[A], inital: B)(f: (A, B) => B): B = {
     list match {
       case Nil               => inital
-      case Cons(value, next) => f(value, foldRight(next, inital)(f))
+      case Cons(value, tail) => f(value, foldRight(tail, inital)(f))
     }
   }
 
@@ -63,7 +63,7 @@ object List {
   def foldLeft[A, B](list: List[A], initial: B)(f: (B, A) => B): B = {
     list match {
       case Nil               => initial
-      case Cons(value, next) => foldLeft(next, f(initial, value))(f)
+      case Cons(value, tail) => foldLeft(tail, f(initial, value))(f)
     }
   }
 
@@ -71,6 +71,20 @@ object List {
     foldLeft[A, List[A]](list, Nil)((acc, h) => Cons(h, acc))
   }
 
+  def fold_right_with_left_reverse[A, B](list: List[A], inital: B)(
+      f: (A, B) => B
+  ): B = {
+    foldLeft[List[A], B](reverse(list), inital)(f)
+  }
+
+  def fold_right_with_left_deffer[A, B](list: List[A], inital: B)(
+      f: (A, B) => B
+  ): B = {
+    foldLeft(list, (b: B) => b)((g, a) => b => g(f(a, b)))(inital)
+  }
+
+  def append[A](list: List[A], addition: List[A]): List[A] =
+    foldRight(list, addition)(Cons(_, _))
 }
 
 object Concrete_Usecase {
